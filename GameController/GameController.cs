@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameModel
+namespace GameController
 {
-    class GameManager
+    class GameController
     {
     }
 }

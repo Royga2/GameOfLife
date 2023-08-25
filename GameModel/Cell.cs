@@ -6,19 +6,22 @@ using System.Threading.Tasks;
 
 namespace GameModel
 {
-    class Cell
+    public class Cell
     {
-        public bool IsAlive { get; set; }
-        private readonly int r_Row;
-        private readonly int r_Col;
-
-        public Cell(int i_Row, int i_Col)
+        public enum CellState
         {
-            r_Row = i_Row;
-            r_Col = i_Col;
+            Dead,
+            Alive
         }
 
-        public int Row => r_Row;
-        public int Col => r_Col;
+        public CellState State { get; set; }
+        public int LiveNeighborCount { get; set; }
+
+        public Cell()
+        {
+            State = CellState.Dead;
+        }
+
+        public bool IsAlive => State == CellState.Alive;
     }
 }
