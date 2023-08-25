@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameModel
 {
-    public class Board
+    public class Colony
     {
         private readonly Cell[,] cells;
         private readonly int rows, cols;
@@ -14,7 +14,7 @@ namespace GameModel
         public event Action BoardChanged;
         public event Action SteadyStateReached;
 
-        public Board(int rows, int cols)
+        public Colony(int rows, int cols)
         {
             this.rows = rows;
             this.cols = cols;

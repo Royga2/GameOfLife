@@ -1,7 +1,7 @@
 ﻿
-namespace GameView
+namespace GameOfLife.View
 {
-    partial class Form1
+    partial class GameForm
     {
         /// <summary>
         /// Required designer variable.
@@ -31,14 +31,14 @@ namespace GameView
         {
             this.SuspendLayout();
             // 
-            // Form1
+            // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Name = "GameForm";
+            this.Text = "Game of Life Exc";
+            this.Load += new System.EventHandler(this.GameForm_Load);
             this.ResumeLayout(false);
 
         }
