@@ -10,7 +10,7 @@ namespace GameOfLife.View
     {
         event Action<int, int> CellClicked;
         void UpdateColony(bool[,] colonyState);
-        void UpdateCell(int row, int col, bool isAlive);
+        void UpdateCell(int row, int col, bool isAlive, bool render);
         void DisplayMessage(string message);
     }
 }

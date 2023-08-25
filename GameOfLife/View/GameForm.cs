@@ -12,143 +12,61 @@ namespace GameOfLife.View
 {
     public partial class GameForm : Form, IGameOfLifeView
     {
-        
+        public int cellSize { get; set; }
         public bool inSimulation;
         public event Action<int, int> CellClicked;
-
-        private TableLayoutPanel mainContainer;
-        private FlowLayoutPanel buttonStrip;
-        private Button playPauseButton;
-        private NumericUpDown numCellsControl;
-        private TableLayoutPanel panel; // Grid container
+        private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
+        private SolidBrush backgroundBrush = new SolidBrush(Color.Black);
 
         public GameForm()
         {
-            InitializeUIComponents();
             InitializeComponent();
-            //foreach (var button in gridButtons)
-            //{
-            //    button.Click += (sender, e) =>
-            //        {
-            //            var btn = (Button)sender;
-            //            int row = (int)btn.Tag[0]; 
-            //            int col = (int)btn.Tag[1];
-            //            CellClicked?.Invoke(row, col);
-            //        };
-            //}
         }
 
-       
 
-        private void InitializeUIComponents()
+
+        public void UpdateCell(int x, int y, bool isAlive, bool render = true)
         {
-            // Initialize main container
-            mainContainer = new TableLayoutPanel
+            using (Graphics g = Graphics.FromImage(pbGrid.Image))
             {
-                Dock = DockStyle.Fill,
-                RowCount = 2,
-                ColumnCount = 1
-            };
-
-            // Give 90% of space to the game grid and 10% to button strip
-            mainContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 90F));
-            mainContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-
-            // Setup game grid
-            SetupGrid();
-            mainContainer.Controls.Add(panel, 0, 0);
-
-            // Initialize button strip
-            buttonStrip = new FlowLayoutPanel
-            {
-                Dock = DockStyle.Fill
-            };
-
-            // NumericUpDown for selecting number of cells
-            numCellsControl = new NumericUpDown
-            {
-                Minimum = 3,
-                Maximum = 100,
-                Value = 12,
-                DecimalPlaces = 0
-            };
-            buttonStrip.Controls.Add(numCellsControl);
-
-            // Consolidated Play/Pause button
-            playPauseButton = new Button { Text = "Play" };
-            playPauseButton.Click += (sender, args) =>
-            {
-                if (playPauseButton.Text == "Play")
+                if (isAlive)
                 {
-                    playPauseButton.Text = "Pause";
-                    // Start or resume game
+                    g.FillRectangle(cellBrush, x * cellSize, y * cellSize, cellSize, cellSize);
                 }
                 else
                 {
-                    playPauseButton.Text = "Play";
-                    // Pause game
+                    g.FillRectangle(backgroundBrush, x * cellSize, y * cellSize, cellSize, cellSize);
                 }
-            };
-            buttonStrip.Controls.Add(playPauseButton);
+            }
 
-            var resetButton = new Button { Text = "Reset" };
-            buttonStrip.Controls.Add(resetButton);
-
-            mainContainer.Controls.Add(buttonStrip, 0, 1);
-
-            this.Controls.Add(mainContainer);
+            if(render)
+            {
+                pbGrid.Invalidate();
+            }
         }
 
-        private void SetupGrid(int rows = 5, int cols = 5)
+        public void UpdateColony(bool[,] matrix)
         {
-            panel = new TableLayoutPanel
+            using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
+            using (Graphics g = Graphics.FromImage(bmp))
             {
-                Dock = DockStyle.Fill,
-                RowCount = rows,
-                ColumnCount = cols
-            };
+                g.Clear(Color.Black);
 
-            for (int i = 0; i < rows; i++)
-            {
-                panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
-                for (int j = 0; j < cols; j++)
+                for (int y = 0; y < matrix.GetLength(0); y++)
                 {
-                    if (i == 0)
-                        panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / cols));
-
-                    Button cellButton = new Button
+                    for (int x = 0; x < matrix.GetLength(1); x++)
                     {
-                        Dock = DockStyle.Fill,
-                        BackColor = Color.LightGray,
-                        FlatStyle = FlatStyle.Flat,
-                        FlatAppearance = { BorderSize = 1, BorderColor = Color.DarkGray }
-                    };
-
-                    cellButton.MouseEnter += (s, e) => { cellButton.BackColor = Color.DarkGray; };
-                    cellButton.MouseLeave += (s, e) => { cellButton.BackColor = Color.LightGray; };
-                    cellButton.Click += (s, e) => { /* Handle cell click event */ };
-
-                    panel.Controls.Add(cellButton);
+                        UpdateCell(x, y, matrix[y, x], false);
+                    }
                 }
-            }
-        }
 
-        public void UpdateColony(bool[,] colonyState)
-        {
-            for (int i = 0; i < colonyState.GetLength(0); i++)
-            {
-                for (int j = 0; j < colonyState.GetLength(1); j++)
-                {
-                    UpdateCell(i, j, colonyState[i, j]);
-                }
-            }
-        }
+                if (pbGrid.Image != null)
+                    pbGrid.Image.Dispose();
 
-        public void UpdateCell(int row, int col, bool isAlive)
-        {
-            {
-                // gridButtons[row, col].BackColor = isAlive ? Color.Black : Color.White;
+                pbGrid.Image = bmp;
             }
+
+            pbGrid.Invalidate();
         }
 
         public void DisplayMessage(string message)
@@ -158,8 +76,10 @@ namespace GameOfLife.View
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-
+            
         }
+
+       
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -168,3 +88,96 @@ namespace GameOfLife.View
         }
     }
 }
+
+//private void InitializeUIComponents()
+//{
+//    // Initialize main container
+//    mainContainer = new TableLayoutPanel
+//    {
+//        Dock = DockStyle.Fill,
+//        RowCount = 2,
+//        ColumnCount = 1
+//    };
+
+//    // Give 90% of space to the game grid and 10% to button strip
+//    mainContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 90F));
+//    mainContainer.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
+
+//    // Setup game grid
+//    SetupGrid();
+//    mainContainer.Controls.Add(panel, 0, 0);
+
+//    // Initialize button strip
+//    buttonStrip = new FlowLayoutPanel
+//    {
+//        Dock = DockStyle.Fill
+//    };
+
+//    // NumericUpDown for selecting number of cells
+//    numCellsControl = new NumericUpDown
+//    {
+//        Minimum = 3,
+//        Maximum = 100,
+//        Value = 12,
+//        DecimalPlaces = 0
+//    };
+//    buttonStrip.Controls.Add(numCellsControl);
+
+//    // Consolidated Play/Pause button
+//    playPauseButton = new Button { Text = "Play" };
+//    playPauseButton.Click += (sender, args) =>
+//    {
+//        if (playPauseButton.Text == "Play")
+//        {
+//            playPauseButton.Text = "Pause";
+//            // Start or resume game
+//        }
+//        else
+//        {
+//            playPauseButton.Text = "Play";
+//            // Pause game
+//        }
+//    };
+//    buttonStrip.Controls.Add(playPauseButton);
+
+//    var resetButton = new Button { Text = "Reset" };
+//    buttonStrip.Controls.Add(resetButton);
+
+//    mainContainer.Controls.Add(buttonStrip, 0, 1);
+
+//    this.Controls.Add(mainContainer);
+//}
+
+//private void SetupGrid(int rows = 5, int cols = 5)
+//{
+//    panel = new TableLayoutPanel
+//    {
+//        Dock = DockStyle.Fill,
+//        RowCount = rows,
+//        ColumnCount = cols
+//    };
+
+//    for (int i = 0; i < rows; i++)
+//    {
+//        panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100f / rows));
+//        for (int j = 0; j < cols; j++)
+//        {
+//            if (i == 0)
+//                panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / cols));
+
+//            Button cellButton = new Button
+//            {
+//                Dock = DockStyle.Fill,
+//                BackColor = Color.LightGray,
+//                FlatStyle = FlatStyle.Flat,
+//                FlatAppearance = { BorderSize = 1, BorderColor = Color.DarkGray }
+//            };
+
+//            cellButton.MouseEnter += (s, e) => { cellButton.BackColor = Color.DarkGray; };
+//            cellButton.MouseLeave += (s, e) => { cellButton.BackColor = Color.LightGray; };
+//            cellButton.Click += (s, e) => { /* Handle cell click event */ };
+
+//            panel.Controls.Add(cellButton);
+//        }
+//    }
+//}

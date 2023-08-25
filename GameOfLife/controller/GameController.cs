@@ -30,7 +30,7 @@ namespace GameOfLife.controller
         {
             bool currentState = colony.GetCellState(row, col);
             colony.SetCellState(row, col, !currentState);
-            view.UpdateCell(row, col, !currentState);
+            view.UpdateCell(row, col, !currentState, true);
         }
 
 
