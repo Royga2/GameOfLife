@@ -35,9 +35,11 @@ namespace GameOfLife.View
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(882, 553);
+            this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "GameForm";
             this.Text = "Game of Life Exc";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameForm_FormClosing);
             this.Load += new System.EventHandler(this.GameForm_Load);
             this.ResumeLayout(false);
 

@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace GameOfLife.View
 {
-    interface IGameOfLifeView
+    public interface IGameOfLifeView
     {
+        event Action<int, int> CellClicked;
+        void UpdateColony(bool[,] colonyState);
+        void UpdateCell(int row, int col, bool isAlive);
+        void DisplayMessage(string message);
     }
 }
