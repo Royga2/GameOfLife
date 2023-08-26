@@ -15,11 +15,14 @@ namespace GameOfLife.View
         public int cellSize { get; set; }
         public bool inSimulation;
         public event Action<int, int> CellClicked;
+        public event Action <int> ResetSimulation;
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
         private SolidBrush backgroundBrush = new SolidBrush(Color.Black);
 
+        
         public GameForm()
         {
+            cellSize = 5;
             InitializeComponent();
         }
 
@@ -27,46 +30,70 @@ namespace GameOfLife.View
 
         public void UpdateCell(int x, int y, bool isAlive, bool render = true)
         {
-            using (Graphics g = Graphics.FromImage(pbGrid.Image))
+            try
             {
-                if (isAlive)
+                if (pbGrid.Image == null)
                 {
-                    g.FillRectangle(cellBrush, x * cellSize, y * cellSize, cellSize, cellSize);
+                    pbGrid.Image = new Bitmap(pbGrid.Width, pbGrid.Height);
                 }
-                else
+                using (Graphics g = Graphics.FromImage(pbGrid.Image))
                 {
-                    g.FillRectangle(backgroundBrush, x * cellSize, y * cellSize, cellSize, cellSize);
+
+                    if(isAlive)
+                    {
+                        g.FillRectangle(cellBrush, x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                    else
+                    {
+                        g.FillRectangle(backgroundBrush, x * cellSize, y * cellSize, cellSize, cellSize);
+                    }
+                }
+                if (render)
+                {
+                    pbGrid.Invalidate();
                 }
             }
-
-            if(render)
+            catch(Exception ex)
             {
-                pbGrid.Invalidate();
+                MessageBox.Show($"Error: {ex.Message} \n {ex.StackTrace}");
             }
         }
 
         public void UpdateColony(bool[,] matrix)
         {
-            using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
-            using (Graphics g = Graphics.FromImage(bmp))
+            try
             {
-                g.Clear(Color.Black);
-
-                for (int y = 0; y < matrix.GetLength(0); y++)
+                // Your graphics code here...
+                
+                if (pbGrid.Image == null)
                 {
-                    for (int x = 0; x < matrix.GetLength(1); x++)
+                    pbGrid.Image = new Bitmap(pbGrid.Width, pbGrid.Height);
+                }
+                using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.Clear(Color.Black);
+
+                    for (int y = 0; y < matrix.GetLength(0); y++)
                     {
-                        UpdateCell(x, y, matrix[y, x], false);
+                        for (int x = 0; x < matrix.GetLength(1); x++)
+                        {
+                            UpdateCell(x, y, matrix[y, x], false);
+                        }
                     }
+
+                    var oldImage = pbGrid.Image;
+                    pbGrid.Image = bmp;
+                    oldImage?.Dispose();
                 }
 
-                if (pbGrid.Image != null)
-                    pbGrid.Image.Dispose();
-
-                pbGrid.Image = bmp;
+                pbGrid.Invalidate();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error: {ex.Message} \n {ex.StackTrace}");
             }
 
-            pbGrid.Invalidate();
         }
 
         public void DisplayMessage(string message)
@@ -74,17 +101,58 @@ namespace GameOfLife.View
             MessageBox.Show(message);
         }
 
-        private void GameForm_Load(object sender, EventArgs e)
+        public void InitializeView()
         {
-            
+            if (pbGrid.Image == null || pbGrid.Image.Width <= 0 || pbGrid.Image.Height <= 0)
+            {
+                Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height);
+                using (Graphics g = Graphics.FromImage(bmp))
+                {
+                    g.Clear(Color.Black);
+                }
+                pbGrid.Image = bmp;
+            }
+            //Initialized?.Invoke();
         }
 
-       
+        public (int, int) getViewSize()
+        {
+            return (pbGrid.Width, pbGrid.Height);
+        }
+        
+        private void GameForm_Load(object sender, EventArgs e)
+        {
+            InitializeView();
+        }
+        public bool IsInvokeRequired()
+        {
+            return this.InvokeRequired;
+        }
+
+        public void PerformInvoke(Action action)
+        {
+            this.Invoke(action);
+        }
+
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             inSimulation = false;
             Application.Exit();
+        }
+
+        private void pbGrid_MouseClick(object sender, MouseEventArgs e)
+        {
+            int x = e.X / cellSize;
+            int y = e.Y / cellSize;
+
+            CellClicked?.Invoke(x, y);
+        }
+
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            cellSize = (int)nudCellSize.Value;
+            ResetSimulation?.Invoke(cellSize);
         }
     }
 }

@@ -5,15 +5,20 @@ namespace GameOfLife.Model
 {
     public class Colony
     {
-        private readonly Cell[,] cells;
-        public int Rows { get; }
-        public int Cols { get; }
+        public Cell[,] cells { get; private set; }
+        public int Rows { get; private set; }
+        public int Cols { get; private set; }
 
         public event Action BoardChanged;
         public event Action SteadyStateReached;
 
 
         public Colony(int rows, int cols)
+        {
+            //Reset(rows, cols);
+        }
+
+        public void Reset(int rows, int cols)
         {
             this.Rows = rows;
             this.Cols = cols;
@@ -23,7 +28,6 @@ namespace GameOfLife.Model
                 for (int j = 0; j < cols; j++)
                     cells[i, j] = new Cell();
         }
-
         public void ComputeNextGeneration()
         {
             Dictionary<(int, int), bool> updates = new Dictionary<(int, int), bool>();

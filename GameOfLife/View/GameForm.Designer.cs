@@ -49,6 +49,7 @@ namespace GameOfLife.View
             this.pbGrid.Size = new System.Drawing.Size(1405, 520);
             this.pbGrid.TabIndex = 0;
             this.pbGrid.TabStop = false;
+            this.pbGrid.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseClick);
             // 
             // nudCellSize
             // 
@@ -92,6 +93,7 @@ namespace GameOfLife.View
             this.buttonReset.TabIndex = 4;
             this.buttonReset.Text = "Reset";
             this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
             // 
             // buttonAdvanced
             // 
