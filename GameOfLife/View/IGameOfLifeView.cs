@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace GameOfLife.View
 
         void UpdateColony(bool[,] colonyState);
 
-        void UpdateCell(int row, int col, bool isAlive, bool render);
+        void UpdateCell(int row, int col, bool isAlive, bool render, Graphics g = null);
 
         bool IsInvokeRequired();
 

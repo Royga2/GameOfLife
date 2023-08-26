@@ -28,73 +28,62 @@ namespace GameOfLife.View
 
 
 
-        public void UpdateCell(int x, int y, bool isAlive, bool render = true)
+        public void UpdateCell(int x, int y, bool isAlive, bool render = true, Graphics providedGraphics = null)
         {
-            try
+            if (providedGraphics == null)
             {
-                if (pbGrid.Image == null)
-                {
-                    pbGrid.Image = new Bitmap(pbGrid.Width, pbGrid.Height);
-                }
                 using (Graphics g = Graphics.FromImage(pbGrid.Image))
                 {
-
-                    if(isAlive)
-                    {
-                        g.FillRectangle(cellBrush, x * cellSize, y * cellSize, cellSize, cellSize);
-                    }
-                    else
-                    {
-                        g.FillRectangle(backgroundBrush, x * cellSize, y * cellSize, cellSize, cellSize);
-                    }
-                }
-                if (render)
-                {
-                    pbGrid.Invalidate();
+                    DrawOnGraphics(g, x, y, isAlive);
                 }
             }
-            catch(Exception ex)
+            else
             {
-                MessageBox.Show($"Error: {ex.Message} \n {ex.StackTrace}");
+                DrawOnGraphics(providedGraphics, x, y, isAlive);
+            }
+
+            if (render)
+            {
+                pbGrid.Invalidate(new Rectangle(x * cellSize, y * cellSize, cellSize, cellSize));
+            }
+        }
+
+        private void DrawOnGraphics(Graphics g, int x, int y, bool isAlive)
+        {
+            if (isAlive)
+            {
+                g.FillRectangle(cellBrush, x * cellSize, y * cellSize, cellSize - 1, cellSize - 1);
+            }
+            else
+            {
+                g.FillRectangle(backgroundBrush, x * cellSize, y * cellSize, cellSize, cellSize);
             }
         }
 
         public void UpdateColony(bool[,] matrix)
         {
-            try
+            using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
+            using (Graphics g = Graphics.FromImage(bmp))
             {
-                // Your graphics code here...
-                
-                if (pbGrid.Image == null)
-                {
-                    pbGrid.Image = new Bitmap(pbGrid.Width, pbGrid.Height);
-                }
-                using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    g.Clear(Color.Black);
+                g.Clear(Color.Black);
 
-                    for (int y = 0; y < matrix.GetLength(0); y++)
+                for (int y = 0; y < matrix.GetLength(0); y++)
+                {
+                    for (int x = 0; x < matrix.GetLength(1); x++)
                     {
-                        for (int x = 0; x < matrix.GetLength(1); x++)
-                        {
-                            UpdateCell(x, y, matrix[y, x], false);
-                        }
+                        UpdateCell(x, y, matrix[y, x], false, g);
                     }
-
-                    var oldImage = pbGrid.Image;
-                    pbGrid.Image = bmp;
-                    oldImage?.Dispose();
                 }
 
-                pbGrid.Invalidate();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error: {ex.Message} \n {ex.StackTrace}");
+                if (pbGrid.Image != null)
+                    pbGrid.Image.Dispose(); 
+
+                pbGrid.Image = (Bitmap)bmp.Clone();
             }
 
+            pbGrid.Invalidate();
         }
+      
 
         public void DisplayMessage(string message)
         {

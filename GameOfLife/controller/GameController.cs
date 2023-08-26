@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 using GameOfLife.Model;
 using GameOfLife.View;
@@ -17,16 +18,16 @@ namespace GameOfLife.controller
         {
             this.colony = colony;
             this.view = view;
-            //this.view.Initialized += UpdateView;
+            resetSimulation(5);
             //listen to the view
             this.view.CellClicked += OnCellClicked;
             this.view.ResetSimulation += OnView_ResetSimulation;
             //listen to the model
-            this.colony.BoardChanged += UpdateView; 
             this.colony.SteadyStateReached += SimulationOver;
         }
 
-        private void OnView_ResetSimulation(int cellSize)
+
+        private void resetSimulation(int cellSize)
         {
             (int, int) viewSize = view.getViewSize();
             int width = viewSize.Item2;
@@ -34,6 +35,10 @@ namespace GameOfLife.controller
             int rows = height / cellSize;
             int cols = width / cellSize;
             colony.Reset(rows, cols);
+        }
+        private void OnView_ResetSimulation(int cellSize)
+        {
+           resetSimulation(cellSize);
         }
         
 
@@ -72,29 +77,18 @@ namespace GameOfLife.controller
 
         private void OnCellClicked(int row, int col)
         {
-            bool currentState = colony.GetCellState(row, col);
-            colony.SetCellState(row, col, !currentState);
-            view.UpdateCell(row, col, !currentState, true);
+            try
+            {
+                bool currentState = colony.GetCellState(row, col);
+                colony.SetCellState(row, col, !currentState);
+                view.UpdateCell(row, col, !currentState, true);
+            }
+            catch(Exception e)
+            {
+                view.DisplayMessage("error while updating board");
+            }
+            
         }
-        private void UpdateView()
-        {
-            bool[,] cellStates = new bool[colony.Rows, colony.Cols];
-            for (int i = 0; i < colony.Rows; i++)
-            {
-                for (int j = 0; j < colony.Cols; j++)
-                {
-                    cellStates[i, j] = colony.GetCellState(i, j);
-                }
-            }
-
-            if (view.IsInvokeRequired())
-            {
-                view.PerformInvoke(() => view.UpdateColony(cellStates));
-            }
-            else
-            {
-                view.UpdateColony(cellStates);
-            }
-        }
+        
     }
 }
