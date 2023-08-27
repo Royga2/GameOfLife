@@ -9,7 +9,6 @@ namespace GameOfLife.controller
 {
     public class GameController
     {
-        //private Thread gameLoopThread;
         private bool isRunning = false;
         private readonly Colony colony;
         private readonly IGameOfLifeView view;
@@ -121,6 +120,7 @@ namespace GameOfLife.controller
             }
             catch(Exception e)
             {
+                view.DisplayMessage(e.Message);
             }
         }
     }

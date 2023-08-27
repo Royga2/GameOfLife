@@ -15,7 +15,8 @@ namespace GameOfLife.Model
 
         public Colony(int rows, int cols)
         {
-            //Reset(rows, cols);
+            this.Rows = rows;
+            this.Cols = cols;
         }
 
         public void Reset(int rows, int cols)
@@ -34,6 +35,7 @@ namespace GameOfLife.Model
 
             OnBoardChanged();
         }
+
         public void ComputeNextGeneration()
         {
             Dictionary<(int, int), bool> updates = new Dictionary<(int, int), bool>();
