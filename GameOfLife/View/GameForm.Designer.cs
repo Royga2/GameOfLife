@@ -34,7 +34,7 @@ namespace GameOfLife.View
             this.labelCellSize = new System.Windows.Forms.Label();
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonAdvanced = new System.Windows.Forms.Button();
-            this.buttonStrartStop = new System.Windows.Forms.Button();
+            this.buttonStartStop = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellSize)).BeginInit();
             this.SuspendLayout();
@@ -49,14 +49,16 @@ namespace GameOfLife.View
             this.pbGrid.Size = new System.Drawing.Size(1405, 520);
             this.pbGrid.TabIndex = 0;
             this.pbGrid.TabStop = false;
-            this.pbGrid.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseClick);
+            this.pbGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseDown);
+            this.pbGrid.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseMove);
+            this.pbGrid.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseUp);
             // 
             // nudCellSize
             // 
             this.nudCellSize.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.nudCellSize.Location = new System.Drawing.Point(80, 588);
             this.nudCellSize.Maximum = new decimal(new int[] {
-            30,
+            35,
             0,
             0,
             0});
@@ -105,27 +107,32 @@ namespace GameOfLife.View
             this.buttonAdvanced.Text = "Advanced";
             this.buttonAdvanced.UseVisualStyleBackColor = true;
             // 
-            // buttonStrartStop
+            // buttonStartStop
             // 
-            this.buttonStrartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStrartStop.Location = new System.Drawing.Point(1342, 590);
-            this.buttonStrartStop.Name = "buttonStrartStop";
-            this.buttonStrartStop.Size = new System.Drawing.Size(75, 23);
-            this.buttonStrartStop.TabIndex = 6;
-            this.buttonStrartStop.Text = "Start";
-            this.buttonStrartStop.UseVisualStyleBackColor = true;
+            this.buttonStartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.buttonStartStop.Location = new System.Drawing.Point(1342, 590);
+            this.buttonStartStop.Name = "buttonStartStop";
+            this.buttonStartStop.Size = new System.Drawing.Size(75, 23);
+            this.buttonStartStop.TabIndex = 6;
+            this.buttonStartStop.Text = "Start";
+            this.buttonStartStop.UseVisualStyleBackColor = true;
+            this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1429, 658);
-            this.Controls.Add(this.buttonStrartStop);
+            this.Controls.Add(this.buttonStartStop);
             this.Controls.Add(this.buttonAdvanced);
             this.Controls.Add(this.buttonReset);
             this.Controls.Add(this.labelCellSize);
             this.Controls.Add(this.nudCellSize);
             this.Controls.Add(this.pbGrid);
+            this.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.DoubleBuffered = true;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "GameForm";
             this.Text = "Game of Life Exc";
@@ -145,7 +152,7 @@ namespace GameOfLife.View
         private System.Windows.Forms.Label labelCellSize;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonAdvanced;
-        private System.Windows.Forms.Button buttonStrartStop;
+        private System.Windows.Forms.Button buttonStartStop;
     }
 }
 

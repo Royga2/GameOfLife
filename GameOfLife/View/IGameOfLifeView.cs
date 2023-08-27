@@ -13,17 +13,18 @@ namespace GameOfLife.View
 
         event Action<int> ResetSimulation;
 
+        event Action<bool> SimulationState; 
         void UpdateColony(bool[,] colonyState);
 
         void UpdateCell(int row, int col, bool isAlive, bool render, Graphics g = null);
 
-        bool IsInvokeRequired();
+       // bool IsInvokeRequired();
 
-        void PerformInvoke(Action action);
+        //void PerformInvoke(Action action);
 
         void DisplayMessage(string message);
 
-        void InitializeView();
+        //void InitializeView();
         
         (int width, int height) getViewSize();
     }

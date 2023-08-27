@@ -13,9 +13,11 @@ namespace GameOfLife.View
     public partial class GameForm : Form, IGameOfLifeView
     {
         public int cellSize { get; set; }
-        public bool inSimulation;
         public event Action<int, int> CellClicked;
         public event Action <int> ResetSimulation;
+        private bool isMousePressed = false;
+        public event Action<bool> SimulationState;
+        private readonly object imageLock = new object();
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
         private SolidBrush backgroundBrush = new SolidBrush(Color.Black);
 
@@ -25,8 +27,6 @@ namespace GameOfLife.View
             cellSize = 5;
             InitializeComponent();
         }
-
-
 
         public void UpdateCell(int x, int y, bool isAlive, bool render = true, Graphics providedGraphics = null)
         {
@@ -62,28 +62,30 @@ namespace GameOfLife.View
 
         public void UpdateColony(bool[,] matrix)
         {
-            using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
-            using (Graphics g = Graphics.FromImage(bmp))
+            lock (imageLock)
             {
-                g.Clear(Color.Black);
-
-                for (int y = 0; y < matrix.GetLength(0); y++)
+                using (Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height))
+                using (Graphics g = Graphics.FromImage(bmp))
                 {
-                    for (int x = 0; x < matrix.GetLength(1); x++)
+                    for (int y = 0; y < matrix.GetLength(0); y++)
                     {
-                        UpdateCell(x, y, matrix[y, x], false, g);
+                        for (int x = 0; x < matrix.GetLength(1); x++)
+                        {
+                            UpdateCell(y, x, matrix[y, x], false, g);
+                        }
                     }
+
+                    if (pbGrid.Image != null)
+                    {
+                        pbGrid.Image.Dispose();
+                    }
+                    pbGrid.Image = (Bitmap)bmp.Clone();
                 }
-
-                if (pbGrid.Image != null)
-                    pbGrid.Image.Dispose(); 
-
-                pbGrid.Image = (Bitmap)bmp.Clone();
             }
 
             pbGrid.Invalidate();
         }
-      
+
 
         public void DisplayMessage(string message)
         {
@@ -95,13 +97,10 @@ namespace GameOfLife.View
             if (pbGrid.Image == null || pbGrid.Image.Width <= 0 || pbGrid.Image.Height <= 0)
             {
                 Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height);
-                using (Graphics g = Graphics.FromImage(bmp))
-                {
-                    g.Clear(Color.Black);
-                }
+                pbGrid.BackColor = Color.Black;
                 pbGrid.Image = bmp;
+                AdjustPictureBoxSize();
             }
-            //Initialized?.Invoke();
         }
 
         public (int, int) getViewSize()
@@ -113,36 +112,90 @@ namespace GameOfLife.View
         {
             InitializeView();
         }
-        public bool IsInvokeRequired()
-        {
-            return this.InvokeRequired;
-        }
 
-        public void PerformInvoke(Action action)
-        {
-            this.Invoke(action);
-        }
+        //public bool IsInvokeRequired()
+        //{
+        //    return this.InvokeRequired;
+        //}
+
+        //public void PerformInvoke(Action action)
+        //{
+        //    this.Invoke(action);
+        //}
 
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            inSimulation = false;
             Application.Exit();
         }
 
-        private void pbGrid_MouseClick(object sender, MouseEventArgs e)
+        private void ChangeCellStateFromMouse(int mouseX, int mouseY)
         {
-            int x = e.X / cellSize;
-            int y = e.Y / cellSize;
+            int x = mouseX / cellSize;
+            int y = mouseY / cellSize;
 
             CellClicked?.Invoke(x, y);
         }
 
+
+        private void pbGrid_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isMousePressed = true;
+                ChangeCellStateFromMouse(e.X, e.Y); 
+            }
+        }
+        private void AdjustPictureBoxSize()
+        {
+            int widthModulus = pbGrid.Width % cellSize;
+            int heightModulus = pbGrid.Height % cellSize;
+
+            pbGrid.Width -= widthModulus;
+            pbGrid.Height -= heightModulus;
+        }
+
+        private void pbGrid_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isMousePressed)
+            {
+                ChangeCellStateFromMouse(e.X, e.Y);
+            }
+        }
+
+        private void pbGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            isMousePressed = false;
+        }
         private void buttonReset_Click(object sender, EventArgs e)
         {
             cellSize = (int)nudCellSize.Value;
+            AdjustPictureBoxSize();
             ResetSimulation?.Invoke(cellSize);
         }
+
+        private void buttonStartStop_Click(object sender, EventArgs e)
+        {
+            bool InSimulation = false;
+            if (buttonStartStop.Text == "Start")
+            {
+                buttonStartStop.Text = "Stop";
+                nudCellSize.Enabled = false;
+                buttonReset.Enabled = false;
+                pbGrid.Enabled = false;
+                InSimulation = true;
+            }
+            else
+            {
+                buttonStartStop.Text = "Start";
+                nudCellSize.Enabled = true;
+                buttonReset.Enabled = true;
+                pbGrid.Enabled = true;
+            }
+            SimulationState?.Invoke(InSimulation);
+        }
+
+       
     }
 }
 
