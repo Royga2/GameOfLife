@@ -35,8 +35,11 @@ namespace GameOfLife.View
             this.buttonReset = new System.Windows.Forms.Button();
             this.buttonAdvanced = new System.Windows.Forms.Button();
             this.buttonStartStop = new System.Windows.Forms.Button();
+            this.nudGameSpeed = new System.Windows.Forms.NumericUpDown();
+            this.labelGameSpeed = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbGrid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudGameSpeed)).BeginInit();
             this.SuspendLayout();
             // 
             // pbGrid
@@ -89,7 +92,7 @@ namespace GameOfLife.View
             // buttonReset
             // 
             this.buttonReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonReset.Location = new System.Drawing.Point(141, 587);
+            this.buttonReset.Location = new System.Drawing.Point(156, 588);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(75, 23);
             this.buttonReset.TabIndex = 4;
@@ -100,7 +103,7 @@ namespace GameOfLife.View
             // buttonAdvanced
             // 
             this.buttonAdvanced.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonAdvanced.Location = new System.Drawing.Point(1250, 590);
+            this.buttonAdvanced.Location = new System.Drawing.Point(1250, 623);
             this.buttonAdvanced.Name = "buttonAdvanced";
             this.buttonAdvanced.Size = new System.Drawing.Size(75, 23);
             this.buttonAdvanced.TabIndex = 5;
@@ -110,7 +113,7 @@ namespace GameOfLife.View
             // buttonStartStop
             // 
             this.buttonStartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonStartStop.Location = new System.Drawing.Point(1342, 590);
+            this.buttonStartStop.Location = new System.Drawing.Point(1342, 623);
             this.buttonStartStop.Name = "buttonStartStop";
             this.buttonStartStop.Size = new System.Drawing.Size(75, 23);
             this.buttonStartStop.TabIndex = 6;
@@ -118,11 +121,48 @@ namespace GameOfLife.View
             this.buttonStartStop.UseVisualStyleBackColor = true;
             this.buttonStartStop.Click += new System.EventHandler(this.buttonStartStop_Click);
             // 
+            // nudGameSpeed
+            // 
+            this.nudGameSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nudGameSpeed.Location = new System.Drawing.Point(1344, 590);
+            this.nudGameSpeed.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
+            this.nudGameSpeed.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudGameSpeed.Name = "nudGameSpeed";
+            this.nudGameSpeed.Size = new System.Drawing.Size(46, 22);
+            this.nudGameSpeed.TabIndex = 7;
+            this.nudGameSpeed.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudGameSpeed.ValueChanged += new System.EventHandler(this.nudGameSpeed_ValueChanged);
+            // 
+            // labelGameSpeed
+            // 
+            this.labelGameSpeed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelGameSpeed.AutoSize = true;
+            this.labelGameSpeed.Location = new System.Drawing.Point(1247, 590);
+            this.labelGameSpeed.Name = "labelGameSpeed";
+            this.labelGameSpeed.Size = new System.Drawing.Size(91, 17);
+            this.labelGameSpeed.TabIndex = 8;
+            this.labelGameSpeed.Text = "Game Speed";
+            // 
             // GameForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Linen;
             this.ClientSize = new System.Drawing.Size(1429, 658);
+            this.Controls.Add(this.labelGameSpeed);
+            this.Controls.Add(this.nudGameSpeed);
             this.Controls.Add(this.buttonStartStop);
             this.Controls.Add(this.buttonAdvanced);
             this.Controls.Add(this.buttonReset);
@@ -135,11 +175,12 @@ namespace GameOfLife.View
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "GameForm";
-            this.Text = "Game of Life Exc";
+            this.Text = "Game of Life";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.GameForm_FormClosing);
             this.Load += new System.EventHandler(this.GameForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbGrid)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudGameSpeed)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -153,6 +194,8 @@ namespace GameOfLife.View
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonAdvanced;
         private System.Windows.Forms.Button buttonStartStop;
+        private System.Windows.Forms.NumericUpDown nudGameSpeed;
+        private System.Windows.Forms.Label labelGameSpeed;
     }
 }
 

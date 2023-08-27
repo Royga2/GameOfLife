@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Threading;
-using System.Windows.Forms;
 using GameOfLife.Model;
 using GameOfLife.View;
-using Timer = System.Threading.Timer;
+using Timer = System.Windows.Forms.Timer;
 
 
 namespace GameOfLife.controller
@@ -11,79 +10,83 @@ namespace GameOfLife.controller
     public class GameController
     {
         //private Thread gameLoopThread;
-        //private bool isRunning = false;
+        private bool isRunning = false;
         private readonly Colony colony;
         private readonly IGameOfLifeView view;
         private Timer gameTimer;
-        private int timerIntervalInMiliSec = 1000;
+        private int BASE_SPEED = 1000;
+        private int timerInterval = 1000;
 
         public GameController(Colony colony, IGameOfLifeView view)
         {
             this.colony = colony;
             this.view = view;
             initializedGame();
-
-
         }
 
         private void initializedGame()
         {
             resetSimulation(5);
-            setTimer(1000);
-
-            this.view.SimulationState += OnSimlationStateChanged;
-            //listen to the view
+            setTimer();
+            this.view.SimulationState += OnSimulationStateChanged;
             this.view.CellClicked += OnCellClicked;
             this.view.ResetSimulation += OnView_ResetSimulation;
-            //listen to the model
+            this.view.SimulationSpeed += OnView_SimulationSpeed;
             this.colony.SteadyStateReached += SimulationOver;
-            this.colony.BoardChanged += upateView;
+            this.colony.BoardChanged += updateView;
         }
 
-        private void upateView()
+        private void OnView_SimulationSpeed(int gameSpeed)
+        {
+            timerInterval = BASE_SPEED / gameSpeed;
+            if(isRunning)
+            {
+                StartTimer();
+            }
+        }
+
+        private void updateView()
         {
             bool[,] currentColonyState = colony.ToBoolArray();
             view.UpdateColony(currentColonyState);
         }
 
-        private void OnSimlationStateChanged(bool isRuning)
+        private void OnSimulationStateChanged(bool inSimulation)
         {
-            if(isRuning)
+            if(inSimulation)
             {
+                isRunning = true;
                 StartTimer();
             }
             else
             {
+                isRunning = false;
                 StopTimer();
             }
         }
-
-        private void setTimer(int miliSecondInterval)
+        private void setTimer()
         {
-            this.timerIntervalInMiliSec = miliSecondInterval;
-            TimerCallback timerCallback = new TimerCallback(TimerTick);
-            gameTimer = new Timer(timerCallback, null, Timeout.Infinite, miliSecondInterval);
+            gameTimer = new Timer();
+            gameTimer.Interval = timerInterval;
+            gameTimer.Tick += TimerTick;
         }
 
         public void StartTimer()
         {
-            colony.ComputeNextGeneration();
-            upateView();
-            gameTimer.Change(0, timerIntervalInMiliSec);
+            gameTimer.Interval = timerInterval;
+            gameTimer.Start();
         }
 
         public void StopTimer()
         {
-            gameTimer.Change(Timeout.Infinite, 0); 
+            gameTimer.Stop();
         }
 
-        private void TimerTick(object state)
+        private void TimerTick(object sender, EventArgs e)
         {
             colony.ComputeNextGeneration();
-            bool[,] currentColonyState = colony.ToBoolArray();
-            view.UpdateColony(currentColonyState);
+            updateView();
         }
-    
 
         private void resetSimulation(int cellSize)
         {
@@ -97,42 +100,15 @@ namespace GameOfLife.controller
 
         private void OnView_ResetSimulation(int cellSize)
         {
-           resetSimulation(cellSize);
+            isRunning = false;
+            resetSimulation(cellSize);
         }
-
         
-        //public void StartSimulation()
-        //{
-        //    isRunning = true;
-        //    gameLoopThread = new Thread(GameLoop);
-        //    gameLoopThread.Start();
-        //}
-
-        //public void StopSimulation()
-        //{
-        //    isRunning = false;
-        //    if (gameLoopThread != null && gameLoopThread.IsAlive)
-        //    {
-        //        gameLoopThread.Join(); // Wait for the thread to finish
-        //    }
-        //}
-
-        //private void GameLoop()
-        //{
-        //    while (isRunning)
-        //    {
-        //        colony.ComputeNextGeneration();
-
-        //        // Sleep to control the speed of the simulation.
-        //        // Adjust as needed.
-        //        Thread.Sleep(1000);
-        //    }
-        //}
         private void SimulationOver()
         {
             StopTimer();
+            isRunning = false;
             view.DisplayMessage("Simulation Over");
-            
         }
 
         private void OnCellClicked(int row, int col)
@@ -146,8 +122,6 @@ namespace GameOfLife.controller
             catch(Exception e)
             {
             }
-            
         }
-        
     }
 }
