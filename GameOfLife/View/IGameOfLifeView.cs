@@ -15,12 +15,16 @@ namespace GameOfLife.View
 
         event Action<int> SimulationSpeed;
 
-        event Action<bool> SimulationState; 
+        event Action<bool> SimulationState;
+
+        event Action AdvanceGeneration;
         void UpdateColony(bool[,] colonyState);
 
         void UpdateCell(int row, int col, bool isAlive, bool render, Graphics g = null);
 
         void DisplayMessage(string message);
+
+        void UpdateStatistics(int generationCount, int liveCellCount, int deadCellCount);
 
         (int width, int height) getViewSize();
     }

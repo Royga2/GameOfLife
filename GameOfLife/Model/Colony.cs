@@ -8,6 +8,9 @@ namespace GameOfLife.Model
         public Cell[,] cells { get; private set; }
         public int Rows { get; private set; }
         public int Cols { get; private set; }
+        public int GenerationCount { get; private set; } = 0;
+        public int LiveCellCount { get; private set; } = 0;
+        public int DeadCellCount { get; private set; } = 0;
 
         public event Action BoardChanged;
         public event Action SteadyStateReached;
@@ -21,6 +24,10 @@ namespace GameOfLife.Model
 
         public void Reset(int rows, int cols)
         {
+            GenerationCount = 0;
+            LiveCellCount = 0;   
+            DeadCellCount = rows * cols; 
+
             this.Rows = rows;
             this.Cols = cols;
             cells = new Cell[rows, cols];
@@ -61,6 +68,7 @@ namespace GameOfLife.Model
 
             if (updates.Count > 0)
             {
+                GenerationCount++;
                 foreach (KeyValuePair<(int, int), bool> update in updates)
                 {
                     SetCellState(update.Key.Item1, update.Key.Item2, update.Value);
@@ -71,6 +79,12 @@ namespace GameOfLife.Model
             {
                 OnSteadyStateReached();
             }
+        }
+
+        private void UpdateLiveDeadCounts(bool isBecomingAlive)
+        {
+            LiveCellCount += isBecomingAlive ? 1 : -1;
+            DeadCellCount += isBecomingAlive ? -1 : 1;
         }
 
         public bool GetCellState(int row, int col)
@@ -85,6 +99,7 @@ namespace GameOfLife.Model
 
             if (oldState != isAlive)
             {
+                UpdateLiveDeadCounts(isAlive);
                 int adjustment = isAlive ? 1 : -1;
                 AdjustNeighborCount(row, col, adjustment);
             }

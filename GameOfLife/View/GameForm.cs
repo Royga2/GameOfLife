@@ -18,12 +18,13 @@ namespace GameOfLife.View
         public event Action <int> ResetSimulation;
         public event Action<int> SimulationSpeed;
         public event Action<bool> SimulationState;
+        public event Action AdvanceGeneration;
         private bool isMousePressed = false;
         private readonly object imageLock = new object();
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
         private SolidBrush backgroundBrush = new SolidBrush(Color.Black);
 
-        
+
         public GameForm()
         {
             InitializeComponent();
@@ -34,6 +35,7 @@ namespace GameOfLife.View
         {
             cellSize = (int)nudCellSize.Value;
         }
+
         public void UpdateCell(int x, int y, bool isAlive, bool render = true, Graphics providedGraphics = null)
         {
             if (providedGraphics == null)
@@ -95,8 +97,17 @@ namespace GameOfLife.View
 
         public void DisplayMessage(string message)
         {
+            isMousePressed = false;
             MessageBox.Show(message);
         }
+
+        public void UpdateStatistics(int generationCount, int liveCellCount, int deadCellCount)
+        {
+            labelGenerationCount.Text = string.Format($"Generation: {generationCount}");
+            labelLiveCellCount.Text = $"Live Cells: {liveCellCount}";
+            labelDeadCellCount.Text = $"Dead Cells: {deadCellCount}";
+        }
+
 
         public void InitializeView()
         {
@@ -132,7 +143,6 @@ namespace GameOfLife.View
             CellClicked?.Invoke(x, y);
         }
 
-
         private void pbGrid_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -142,7 +152,6 @@ namespace GameOfLife.View
             }
         }
 
-        
         private void AdjustPictureBoxSize()
         {
             int widthModulus = pbGrid.Width % cellSize;
@@ -174,20 +183,18 @@ namespace GameOfLife.View
         private void buttonStartStop_Click(object sender, EventArgs e)
         {
             bool InSimulation = false;
-            if (buttonStartStop.Text == "Start")
+            if (buttonStartStop.Text == "Start Simulation")
             {
-                buttonStartStop.Text = "Stop";
+                buttonStartStop.Text = "Stop Simulation";
                 nudCellSize.Enabled = false;
                 buttonReset.Enabled = false;
-                //nudGameSpeed.Enabled = false;
                 pbGrid.Enabled = false;
                 InSimulation = true;
             }
             else
             {
-                buttonStartStop.Text = "Start";
+                buttonStartStop.Text = "Start Simulation";
                 nudCellSize.Enabled = true;
-                //nudGameSpeed.Enabled = true;
                 buttonReset.Enabled = true;
                 pbGrid.Enabled = true;
             }
@@ -198,6 +205,11 @@ namespace GameOfLife.View
         {
             int gameSpeed = (int)nudGameSpeed.Value;
             SimulationSpeed?.Invoke(gameSpeed);
+        }
+
+        private void buttonAdvancedGeneration_Click(object sender, EventArgs e)
+        {
+            AdvanceGeneration?.Invoke();
         }
     }
 }

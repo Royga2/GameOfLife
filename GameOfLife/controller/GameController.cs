@@ -33,6 +33,13 @@ namespace GameOfLife.controller
             this.view.SimulationSpeed += OnView_SimulationSpeed;
             this.colony.SteadyStateReached += SimulationOver;
             this.colony.BoardChanged += updateView;
+            this.view.AdvanceGeneration += OnAdvanceGeneration;
+        }
+
+        private void OnAdvanceGeneration()
+        {
+            colony.ComputeNextGeneration();
+            updateView();
         }
 
         private void OnView_SimulationSpeed(int gameSpeed)
@@ -48,6 +55,7 @@ namespace GameOfLife.controller
         {
             bool[,] currentColonyState = colony.ToBoolArray();
             view.UpdateColony(currentColonyState);
+            view.UpdateStatistics(colony.GenerationCount, colony.LiveCellCount, colony.DeadCellCount);
         }
 
         private void OnSimulationStateChanged(bool inSimulation)
@@ -83,8 +91,16 @@ namespace GameOfLife.controller
 
         private void TimerTick(object sender, EventArgs e)
         {
-            colony.ComputeNextGeneration();
-            updateView();
+
+            try
+            {
+                colony.ComputeNextGeneration();
+                updateView();
+            }
+            catch (Exception ex)
+            {
+                view.DisplayMessage($"Error updating generation: {ex.Message}");
+            }
         }
 
         private void resetSimulation(int cellSize)
@@ -112,16 +128,27 @@ namespace GameOfLife.controller
 
         private void OnCellClicked(int row, int col)
         {
+            if (!IsWithinBounds(row, col))
+            {
+                return;
+            }
+
             try
             {
                 bool currentState = colony.GetCellState(row, col);
                 colony.SetCellState(row, col, !currentState);
                 view.UpdateCell(row, col, !currentState, true);
+                view.UpdateStatistics(colony.GenerationCount, colony.LiveCellCount,colony.DeadCellCount);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
-                view.DisplayMessage(e.Message);
+                view.DisplayMessage($"Unexpected error processing cell click: {e.Message}");
             }
+        }
+
+        private bool IsWithinBounds(int row, int col)
+        {
+            return row >= 0 && row < colony.Rows && col >= 0 && col < colony.Cols;
         }
     }
 }
