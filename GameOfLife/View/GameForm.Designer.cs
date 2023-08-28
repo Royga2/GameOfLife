@@ -51,9 +51,9 @@ namespace GameOfLife.View
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pbGrid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(45)))), ((int)(((byte)(45)))), ((int)(((byte)(45)))));
-            this.pbGrid.Location = new System.Drawing.Point(45, 60);
+            this.pbGrid.Location = new System.Drawing.Point(37, 60);
             this.pbGrid.Name = "pbGrid";
-            this.pbGrid.Size = new System.Drawing.Size(1345, 528);
+            this.pbGrid.Size = new System.Drawing.Size(1393, 528);
             this.pbGrid.TabIndex = 0;
             this.pbGrid.TabStop = false;
             this.pbGrid.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pbGrid_MouseDown);
@@ -66,9 +66,9 @@ namespace GameOfLife.View
             this.nudCellSize.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.nudCellSize.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nudCellSize.ForeColor = System.Drawing.Color.OrangeRed;
-            this.nudCellSize.Location = new System.Drawing.Point(107, 616);
+            this.nudCellSize.Location = new System.Drawing.Point(107, 611);
             this.nudCellSize.Maximum = new decimal(new int[] {
-            35,
+            50,
             0,
             0,
             0});
@@ -80,12 +80,12 @@ namespace GameOfLife.View
             this.nudCellSize.Name = "nudCellSize";
             this.nudCellSize.Size = new System.Drawing.Size(46, 19);
             this.nudCellSize.TabIndex = 1;
+            this.nudCellSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudCellSize.Value = new decimal(new int[] {
             5,
             0,
             0,
             0});
-            this.nudCellSize.ValueChanged += new System.EventHandler(this.nudCellSize_ValueChanged);
             // 
             // labelCellSize
             // 
@@ -93,12 +93,11 @@ namespace GameOfLife.View
             this.labelCellSize.AutoSize = true;
             this.labelCellSize.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelCellSize.ForeColor = System.Drawing.Color.OrangeRed;
-            this.labelCellSize.Location = new System.Drawing.Point(45, 615);
+            this.labelCellSize.Location = new System.Drawing.Point(44, 610);
             this.labelCellSize.Name = "labelCellSize";
             this.labelCellSize.Size = new System.Drawing.Size(56, 18);
             this.labelCellSize.TabIndex = 3;
             this.labelCellSize.Text = "Cell Size";
-            this.labelCellSize.Click += new System.EventHandler(this.labelCellSize_Click);
             // 
             // buttonReset
             // 
@@ -109,9 +108,9 @@ namespace GameOfLife.View
             this.buttonReset.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonReset.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonReset.ForeColor = System.Drawing.Color.OrangeRed;
-            this.buttonReset.Location = new System.Drawing.Point(175, 608);
+            this.buttonReset.Location = new System.Drawing.Point(183, 604);
             this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(75, 31);
+            this.buttonReset.Size = new System.Drawing.Size(131, 31);
             this.buttonReset.TabIndex = 4;
             this.buttonReset.Text = "Reset";
             this.buttonReset.UseVisualStyleBackColor = false;
@@ -126,11 +125,11 @@ namespace GameOfLife.View
             this.buttonAdvancedGeneration.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonAdvancedGeneration.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonAdvancedGeneration.ForeColor = System.Drawing.Color.OrangeRed;
-            this.buttonAdvancedGeneration.Location = new System.Drawing.Point(1011, 607);
+            this.buttonAdvancedGeneration.Location = new System.Drawing.Point(1047, 603);
             this.buttonAdvancedGeneration.Name = "buttonAdvancedGeneration";
-            this.buttonAdvancedGeneration.Size = new System.Drawing.Size(160, 33);
+            this.buttonAdvancedGeneration.Size = new System.Drawing.Size(179, 33);
             this.buttonAdvancedGeneration.TabIndex = 5;
-            this.buttonAdvancedGeneration.Text = "  Advance Generation ";
+            this.buttonAdvancedGeneration.Text = "   Advance Generation ";
             this.buttonAdvancedGeneration.UseVisualStyleBackColor = false;
             this.buttonAdvancedGeneration.Click += new System.EventHandler(this.buttonAdvancedGeneration_Click);
             // 
@@ -143,7 +142,7 @@ namespace GameOfLife.View
             this.buttonStartStop.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonStartStop.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.buttonStartStop.ForeColor = System.Drawing.Color.OrangeRed;
-            this.buttonStartStop.Location = new System.Drawing.Point(1211, 607);
+            this.buttonStartStop.Location = new System.Drawing.Point(1251, 603);
             this.buttonStartStop.Name = "buttonStartStop";
             this.buttonStartStop.Size = new System.Drawing.Size(179, 33);
             this.buttonStartStop.TabIndex = 6;
@@ -158,9 +157,9 @@ namespace GameOfLife.View
             this.nudGameSpeed.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.nudGameSpeed.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.nudGameSpeed.ForeColor = System.Drawing.Color.OrangeRed;
-            this.nudGameSpeed.Location = new System.Drawing.Point(923, 613);
+            this.nudGameSpeed.Location = new System.Drawing.Point(964, 611);
             this.nudGameSpeed.Maximum = new decimal(new int[] {
-            15,
+            20,
             0,
             0,
             0});
@@ -172,6 +171,7 @@ namespace GameOfLife.View
             this.nudGameSpeed.Name = "nudGameSpeed";
             this.nudGameSpeed.Size = new System.Drawing.Size(46, 19);
             this.nudGameSpeed.TabIndex = 7;
+            this.nudGameSpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudGameSpeed.Value = new decimal(new int[] {
             1,
             0,
@@ -185,12 +185,11 @@ namespace GameOfLife.View
             this.labelGameSpeed.AutoSize = true;
             this.labelGameSpeed.Font = new System.Drawing.Font("Impact", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelGameSpeed.ForeColor = System.Drawing.Color.OrangeRed;
-            this.labelGameSpeed.Location = new System.Drawing.Point(826, 613);
+            this.labelGameSpeed.Location = new System.Drawing.Point(876, 611);
             this.labelGameSpeed.Name = "labelGameSpeed";
             this.labelGameSpeed.Size = new System.Drawing.Size(77, 18);
             this.labelGameSpeed.TabIndex = 8;
             this.labelGameSpeed.Text = "Game Speed";
-            this.labelGameSpeed.Click += new System.EventHandler(this.labelGameSpeed_Click);
             // 
             // labelGenerationCount
             // 
@@ -210,7 +209,7 @@ namespace GameOfLife.View
             this.labelLiveCellCount.AutoSize = true;
             this.labelLiveCellCount.Font = new System.Drawing.Font("Impact", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelLiveCellCount.ForeColor = System.Drawing.Color.OrangeRed;
-            this.labelLiveCellCount.Location = new System.Drawing.Point(1218, 23);
+            this.labelLiveCellCount.Location = new System.Drawing.Point(1286, 23);
             this.labelLiveCellCount.Name = "labelLiveCellCount";
             this.labelLiveCellCount.Size = new System.Drawing.Size(127, 21);
             this.labelLiveCellCount.TabIndex = 10;
@@ -222,7 +221,7 @@ namespace GameOfLife.View
             this.labelDeadCellCount.AutoSize = true;
             this.labelDeadCellCount.Font = new System.Drawing.Font("Impact", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelDeadCellCount.ForeColor = System.Drawing.Color.OrangeRed;
-            this.labelDeadCellCount.Location = new System.Drawing.Point(1049, 23);
+            this.labelDeadCellCount.Location = new System.Drawing.Point(1117, 23);
             this.labelDeadCellCount.Name = "labelDeadCellCount";
             this.labelDeadCellCount.Size = new System.Drawing.Size(136, 21);
             this.labelDeadCellCount.TabIndex = 11;
@@ -233,7 +232,7 @@ namespace GameOfLife.View
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.ClientSize = new System.Drawing.Size(1429, 658);
+            this.ClientSize = new System.Drawing.Size(1469, 658);
             this.Controls.Add(this.labelDeadCellCount);
             this.Controls.Add(this.labelLiveCellCount);
             this.Controls.Add(this.labelGenerationCount);

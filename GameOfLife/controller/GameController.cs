@@ -9,25 +9,156 @@ namespace GameOfLife.controller
 {
     public class GameController : IDisposable
     {
+        #region Fields and Properties
+
         private bool isRunning = false;
         private readonly Colony colony;
         private readonly IGameOfLifeView view;
         private Timer gameTimer;
-        private int BASE_SPEED = 1000;
+        private const int BASE_SPEED = 1000;
         private int timerInterval = 1000;
+
+        #endregion
+
+        #region Constructor and Initialization
 
         public GameController(Colony colony, IGameOfLifeView view)
         {
             this.colony = colony;
             this.view = view;
-            this.view.ViewClosing += OnViewClosing;
+            this.view.ViewClosing += OnView_Closing;
             initializedGame();
         }
 
-        private void OnViewClosing()
+        private void initializedGame()
+        {
+            resetSimulation(5);
+            setTimer();
+            this.view.SimulationState += OnView_SimulationStateChanged;
+            this.view.CellClicked += OnView_CellClicked;
+            this.view.ResetSimulation += OnView_ResetSimulation;
+            this.view.SimulationSpeed += OnView_SimulationSpeedChanged;
+            this.colony.SteadyStateReached += OnModel_SimulationOver;
+            this.colony.ColonyChanged += OnModel_ColonyChanged;
+            this.view.AdvanceGeneration += OnView_AdvanceGenerationClicked;
+        }
+
+        #endregion
+
+        #region Event Handlers
+
+        private void OnView_Closing()
         {
             this.Dispose();
         }
+
+        private void OnView_AdvanceGenerationClicked()
+        {
+            colony.ComputeNextGeneration();
+            updateView();
+        }
+
+        private void OnView_SimulationSpeedChanged(int gameSpeed)
+        {
+            timerInterval = BASE_SPEED / gameSpeed;
+            if (isRunning)
+            {
+                StartTimer();
+            }
+        }
+
+        private void OnView_SimulationStateChanged(bool inSimulation)
+        {
+            if (inSimulation)
+            {
+                isRunning = true;
+                StartTimer();
+            }
+            else
+            {
+                isRunning = false;
+                StopTimer();
+            }
+        }
+
+        private void OnView_CellClicked(int row, int col)
+        {
+            if (!IsWithinBounds(row, col))
+            {
+                return;
+            }
+
+            try
+            {
+                bool currentState = colony.GetCellState(row, col);
+                colony.SetCellState(row, col, !currentState);
+                view.UpdateCell(row, col, !currentState, true);
+                view.UpdateStatistics(colony.GenerationCount, colony.LiveCellCount, colony.DeadCellCount);
+            }
+            catch (Exception e)
+            {
+                view.DisplayMessage($"Unexpected error processing cell click: {e.Message}");
+            }
+        }
+
+        private void OnView_ResetSimulation(int cellSize)
+        {
+            isRunning = false;
+            resetSimulation(cellSize);
+        }
+
+        private void OnModel_SimulationOver()
+        {
+            StopTimer();
+            isRunning = false;
+            view.SteadyStateReached(!isRunning);
+            string msg = string.Format($"Simulation Over!\n\nDo you wish to reset the grid?");
+            view.DisplayMessage(msg);
+        }
+
+        private void OnModel_ColonyChanged()
+        {
+            updateView();
+        }
+
+        #endregion
+
+        #region Timer Control
+
+        private void setTimer()
+        {
+            gameTimer = new Timer();
+            gameTimer.Interval = timerInterval;
+            gameTimer.Tick += TimerTick;
+        }
+
+        private void StartTimer()
+        {
+            gameTimer.Interval = timerInterval;
+            gameTimer.Start();
+        }
+
+        private void StopTimer()
+        {
+            gameTimer.Stop();
+        }
+
+        private void TimerTick(object sender, EventArgs e)
+        {
+            try
+            {
+                colony.ComputeNextGeneration();
+                updateView();
+            }
+            catch (Exception ex)
+            {
+                view.DisplayMessage($"Error updating generation: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region Dispose
 
         public void Dispose()
         {
@@ -40,94 +171,25 @@ namespace GameOfLife.controller
             if (disposing)
             {
                 gameTimer?.Dispose();
-                this.view.SimulationState -= OnSimulationStateChanged;
-                this.view.CellClicked -= OnCellClicked;
+                this.view.SimulationState -= OnView_SimulationStateChanged;
+                this.view.CellClicked -= OnView_CellClicked;
                 this.view.ResetSimulation -= OnView_ResetSimulation;
-                this.view.SimulationSpeed -= OnView_SimulationSpeed;
-                this.colony.SteadyStateReached -= SimulationOver;
-                this.colony.ColonyChanged -= updateView;
-                this.view.AdvanceGeneration -= OnAdvanceGeneration;
+                this.view.SimulationSpeed -= OnView_SimulationSpeedChanged;
+                this.colony.SteadyStateReached -= OnModel_SimulationOver;
+                this.colony.ColonyChanged -= OnModel_ColonyChanged;
+                this.view.AdvanceGeneration -= OnView_AdvanceGenerationClicked;
             }
         }
 
-        private void initializedGame()
-        {
-            resetSimulation(5);
-            setTimer();
-            this.view.SimulationState += OnSimulationStateChanged;
-            this.view.CellClicked += OnCellClicked;
-            this.view.ResetSimulation += OnView_ResetSimulation;
-            this.view.SimulationSpeed += OnView_SimulationSpeed;
-            this.colony.SteadyStateReached += SimulationOver;
-            this.colony.ColonyChanged += updateView;
-            this.view.AdvanceGeneration += OnAdvanceGeneration;
-        }
+        #endregion
 
-        private void OnAdvanceGeneration()
-        {
-            colony.ComputeNextGeneration();
-            updateView();
-        }
-
-        private void OnView_SimulationSpeed(int gameSpeed)
-        {
-            timerInterval = BASE_SPEED / gameSpeed;
-            if(isRunning)
-            {
-                StartTimer();
-            }
-        }
+        #region Helper Methods
 
         private void updateView()
         {
             bool[,] currentColonyState = colony.ToBoolArray();
             view.UpdateColony(currentColonyState);
             view.UpdateStatistics(colony.GenerationCount, colony.LiveCellCount, colony.DeadCellCount);
-        }
-
-        private void OnSimulationStateChanged(bool inSimulation)
-        {
-            if(inSimulation)
-            {
-                isRunning = true;
-                StartTimer();
-            }
-            else
-            {
-                isRunning = false;
-                StopTimer();
-            }
-        }
-        private void setTimer()
-        {
-            gameTimer = new Timer();
-            gameTimer.Interval = timerInterval;
-            gameTimer.Tick += TimerTick;
-        }
-
-        public void StartTimer()
-        {
-            gameTimer.Interval = timerInterval;
-            gameTimer.Start();
-        }
-
-        public void StopTimer()
-        {
-            gameTimer.Stop();
-        }
-
-        private void TimerTick(object sender, EventArgs e)
-        {
-
-            try
-            {
-                colony.ComputeNextGeneration();
-                updateView();
-            }
-            catch (Exception ex)
-            {
-                view.DisplayMessage($"Error updating generation: {ex.Message}");
-            }
         }
 
         private void resetSimulation(int cellSize)
@@ -140,43 +202,11 @@ namespace GameOfLife.controller
             colony.Reset(rows, cols);
         }
 
-        private void OnView_ResetSimulation(int cellSize)
-        {
-            isRunning = false;
-            resetSimulation(cellSize);
-        }
-        
-        private void SimulationOver()
-        {
-            StopTimer();
-            isRunning = false;
-            view.SteadyStateReached(!isRunning);
-            view.DisplayMessage("Simulation Over");
-        }
-
-        private void OnCellClicked(int row, int col)
-        {
-            if (!IsWithinBounds(row, col))
-            {
-                return;
-            }
-
-            try
-            {
-                bool currentState = colony.GetCellState(row, col);
-                colony.SetCellState(row, col, !currentState);
-                view.UpdateCell(row, col, !currentState, true);
-                view.UpdateStatistics(colony.GenerationCount, colony.LiveCellCount,colony.DeadCellCount);
-            }
-            catch (Exception e)
-            {
-                view.DisplayMessage($"Unexpected error processing cell click: {e.Message}");
-            }
-        }
-
         private bool IsWithinBounds(int row, int col)
         {
             return row >= 0 && row < colony.Rows && col >= 0 && col < colony.Cols;
         }
+
+        #endregion
     }
 }

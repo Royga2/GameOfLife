@@ -24,11 +24,17 @@ namespace GameOfLife.View
         private readonly object imageLock = new object();
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
         private SolidBrush backgroundBrush = new SolidBrush(Color.FromArgb(45, 45, 45));
+        private int viewHeight;
+        private int viewWidth;
+        private Point mouseDownLocation;
+        private Point currentMouseLocation;
 
 
         public GameForm()
         {
             InitializeComponent();
+            viewHeight = pbGrid.Height;
+            viewWidth = pbGrid.Width;
             setGame();
         }
 
@@ -104,7 +110,20 @@ namespace GameOfLife.View
         public void DisplayMessage(string message)
         {
             isMousePressed = false;
-            MessageBox.Show(message);
+            DialogResult result = MessageBox.Show(message, "Game Of Life message", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+            switch (result)
+            {
+                case (DialogResult.Yes):
+                    {
+                        OnButtonRestartClicked();
+                        break;
+                    }
+
+                case (DialogResult.No):
+                    {
+                        break;
+                    }
+            }
         }
 
         public void UpdateStatistics(int generationCount, int liveCellCount, int deadCellCount)
@@ -128,9 +147,9 @@ namespace GameOfLife.View
 
         public void InitializeView()
         {
-            if (pbGrid.Image == null || pbGrid.Image.Width <= 0 || pbGrid.Image.Height <= 0)
+            if (pbGrid.Image == null)
             {
-                Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height);
+                Bitmap bmp = new Bitmap(viewWidth, viewHeight);
                 pbGrid.BackColor = Color.FromArgb(45, 45, 45);
                 pbGrid.Image = bmp;
                 AdjustPictureBoxSize();
@@ -139,7 +158,7 @@ namespace GameOfLife.View
 
         public (int, int) getViewSize()
         {
-            return (pbGrid.Width, pbGrid.Height);
+            return (viewWidth, viewHeight);
         }
         
         private void GameForm_Load(object sender, EventArgs e)
@@ -160,24 +179,27 @@ namespace GameOfLife.View
             CellClicked?.Invoke(x, y);
         }
 
-        private void pbGrid_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                isMousePressed = true;
-                ChangeCellStateFromMouse(e.X, e.Y); 
-            }
-        }
-
         private void AdjustPictureBoxSize()
         {
-            int widthModulus = pbGrid.Width % cellSize;
-            int heightModulus = pbGrid.Height % cellSize;
+            int widthModulus = viewWidth % cellSize;
+            int heightModulus = viewHeight % cellSize;
 
-            pbGrid.Width -= widthModulus;
-            pbGrid.Height -= heightModulus;
+            pbGrid.Width = viewWidth - widthModulus;
+            pbGrid.Height = viewHeight - heightModulus;
         }
 
+        private void pbGrid_MouseUp(object sender, MouseEventArgs e)
+        {
+            isMousePressed = false;
+
+            int distanceMoved = Math.Abs(e.X - mouseDownLocation.X) + Math.Abs(e.Y - mouseDownLocation.Y);
+
+            if (distanceMoved <= cellSize)
+            {
+                ChangeCellStateFromMouse(e.X, e.Y);
+            }
+        }
+        
         private void pbGrid_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMousePressed)
@@ -185,12 +207,17 @@ namespace GameOfLife.View
                 ChangeCellStateFromMouse(e.X, e.Y);
             }
         }
-
-        private void pbGrid_MouseUp(object sender, MouseEventArgs e)
+        
+        private void pbGrid_MouseDown(object sender, MouseEventArgs e)
         {
-            isMousePressed = false;
+            if (e.Button == MouseButtons.Left)
+            {
+                isMousePressed = true;
+                mouseDownLocation = e.Location;
+            }
         }
-        private void buttonReset_Click(object sender, EventArgs e)
+
+        protected virtual void OnButtonRestartClicked()
         {
             pbGrid.Enabled = true;
             buttonStartStop.Text = string.Format("Start Simulation");
@@ -199,6 +226,10 @@ namespace GameOfLife.View
             setGame();
             AdjustPictureBoxSize();
             ResetSimulation?.Invoke(cellSize);
+        }
+        private void buttonReset_Click(object sender, EventArgs e)
+        {
+            OnButtonRestartClicked();
         }
 
         private void buttonStartStop_Click(object sender, EventArgs e)
@@ -233,19 +264,5 @@ namespace GameOfLife.View
             AdvanceGeneration?.Invoke();
         }
 
-        private void labelGameSpeed_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void labelCellSize_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void nudCellSize_ValueChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }
