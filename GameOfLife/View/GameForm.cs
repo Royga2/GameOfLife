@@ -23,7 +23,7 @@ namespace GameOfLife.View
         private bool isMousePressed = false;
         private readonly object imageLock = new object();
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
-        private SolidBrush backgroundBrush = new SolidBrush(Color.Black);
+        private SolidBrush backgroundBrush = new SolidBrush(Color.FromArgb(45, 45, 45));
 
 
         public GameForm()
@@ -131,7 +131,7 @@ namespace GameOfLife.View
             if (pbGrid.Image == null || pbGrid.Image.Width <= 0 || pbGrid.Image.Height <= 0)
             {
                 Bitmap bmp = new Bitmap(pbGrid.Width, pbGrid.Height);
-                pbGrid.BackColor = Color.Black;
+                pbGrid.BackColor = Color.FromArgb(45, 45, 45);
                 pbGrid.Image = bmp;
                 AdjustPictureBoxSize();
             }
@@ -231,6 +231,21 @@ namespace GameOfLife.View
         private void buttonAdvancedGeneration_Click(object sender, EventArgs e)
         {
             AdvanceGeneration?.Invoke();
+        }
+
+        private void labelGameSpeed_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labelCellSize_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void nudCellSize_ValueChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
