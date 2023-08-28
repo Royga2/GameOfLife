@@ -18,6 +18,8 @@ namespace GameOfLife.View
         event Action<bool> SimulationState;
 
         event Action AdvanceGeneration;
+
+        event Action ViewClosing;
         void UpdateColony(bool[,] colonyState);
 
         void UpdateCell(int row, int col, bool isAlive, bool render, Graphics g = null);
@@ -25,6 +27,8 @@ namespace GameOfLife.View
         void DisplayMessage(string message);
 
         void UpdateStatistics(int generationCount, int liveCellCount, int deadCellCount);
+
+        void SteadyStateReached(bool state);
 
         (int width, int height) getViewSize();
     }

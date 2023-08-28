@@ -119,7 +119,7 @@ namespace GameOfLife.View
             this.buttonStartStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonStartStop.Location = new System.Drawing.Point(1182, 623);
             this.buttonStartStop.Name = "buttonStartStop";
-            this.buttonStartStop.Size = new System.Drawing.Size(208, 23);
+            this.buttonStartStop.Size = new System.Drawing.Size(208, 33);
             this.buttonStartStop.TabIndex = 6;
             this.buttonStartStop.Text = "Start Simulation";
             this.buttonStartStop.UseVisualStyleBackColor = true;

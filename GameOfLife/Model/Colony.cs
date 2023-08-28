@@ -12,7 +12,7 @@ namespace GameOfLife.Model
         public int LiveCellCount { get; private set; } = 0;
         public int DeadCellCount { get; private set; } = 0;
 
-        public event Action BoardChanged;
+        public event Action ColonyChanged;
         public event Action SteadyStateReached;
 
 
@@ -26,8 +26,7 @@ namespace GameOfLife.Model
         {
             GenerationCount = 0;
             LiveCellCount = 0;   
-            DeadCellCount = rows * cols; 
-
+            DeadCellCount = rows * cols;
             this.Rows = rows;
             this.Cols = cols;
             cells = new Cell[rows, cols];
@@ -40,7 +39,7 @@ namespace GameOfLife.Model
                 }
             }
 
-            OnBoardChanged();
+            OnColonyChanged();
         }
 
         public void ComputeNextGeneration()
@@ -73,7 +72,7 @@ namespace GameOfLife.Model
                 {
                     SetCellState(update.Key.Item1, update.Key.Item2, update.Value);
                 }
-                OnBoardChanged();
+                OnColonyChanged();
             }
             else
             {
@@ -105,7 +104,6 @@ namespace GameOfLife.Model
             }
         }
 
-
         private void AdjustNeighborCount(int i, int j, int adjustment)
         {
             for(int x = -1; x <= 1; x++)
@@ -129,7 +127,6 @@ namespace GameOfLife.Model
                     result[i, j] = cells[i, j].IsAlive;
                 }
             }
-
             return result;
         }
 
@@ -138,9 +135,9 @@ namespace GameOfLife.Model
             return i >= 0 && i < Rows && j >= 0 && j < Cols;
         }
 
-        protected virtual void OnBoardChanged()
+        protected virtual void OnColonyChanged()
         {
-            BoardChanged?.Invoke();
+            ColonyChanged?.Invoke();
         }
 
         protected virtual void OnSteadyStateReached()

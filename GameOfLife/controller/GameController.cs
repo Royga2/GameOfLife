@@ -7,7 +7,7 @@ using Timer = System.Windows.Forms.Timer;
 
 namespace GameOfLife.controller
 {
-    public class GameController
+    public class GameController : IDisposable
     {
         private bool isRunning = false;
         private readonly Colony colony;
@@ -20,7 +20,34 @@ namespace GameOfLife.controller
         {
             this.colony = colony;
             this.view = view;
+            this.view.ViewClosing += OnViewClosing;
             initializedGame();
+        }
+
+        private void OnViewClosing()
+        {
+            this.Dispose();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                gameTimer?.Dispose();
+                this.view.SimulationState -= OnSimulationStateChanged;
+                this.view.CellClicked -= OnCellClicked;
+                this.view.ResetSimulation -= OnView_ResetSimulation;
+                this.view.SimulationSpeed -= OnView_SimulationSpeed;
+                this.colony.SteadyStateReached -= SimulationOver;
+                this.colony.ColonyChanged -= updateView;
+                this.view.AdvanceGeneration -= OnAdvanceGeneration;
+            }
         }
 
         private void initializedGame()
@@ -32,7 +59,7 @@ namespace GameOfLife.controller
             this.view.ResetSimulation += OnView_ResetSimulation;
             this.view.SimulationSpeed += OnView_SimulationSpeed;
             this.colony.SteadyStateReached += SimulationOver;
-            this.colony.BoardChanged += updateView;
+            this.colony.ColonyChanged += updateView;
             this.view.AdvanceGeneration += OnAdvanceGeneration;
         }
 
@@ -123,6 +150,7 @@ namespace GameOfLife.controller
         {
             StopTimer();
             isRunning = false;
+            view.SteadyStateReached(!isRunning);
             view.DisplayMessage("Simulation Over");
         }
 

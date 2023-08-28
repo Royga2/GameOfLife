@@ -19,6 +19,7 @@ namespace GameOfLife.View
         public event Action<int> SimulationSpeed;
         public event Action<bool> SimulationState;
         public event Action AdvanceGeneration;
+        public event Action ViewClosing;
         private bool isMousePressed = false;
         private readonly object imageLock = new object();
         private SolidBrush cellBrush = new SolidBrush(Color.DarkOrange);
@@ -34,6 +35,12 @@ namespace GameOfLife.View
         private void setGame()
         {
             cellSize = (int)nudCellSize.Value;
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            ViewClosing?.Invoke();
+            base.OnFormClosing(e);
         }
 
         public void UpdateCell(int x, int y, bool isAlive, bool render = true, Graphics providedGraphics = null)
@@ -94,7 +101,6 @@ namespace GameOfLife.View
             pbGrid.Invalidate();
         }
 
-
         public void DisplayMessage(string message)
         {
             isMousePressed = false;
@@ -104,10 +110,21 @@ namespace GameOfLife.View
         public void UpdateStatistics(int generationCount, int liveCellCount, int deadCellCount)
         {
             labelGenerationCount.Text = string.Format($"Generation: {generationCount}");
-            labelLiveCellCount.Text = $"Live Cells: {liveCellCount}";
-            labelDeadCellCount.Text = $"Dead Cells: {deadCellCount}";
+            labelLiveCellCount.Text = string.Format($"Live Cells: {liveCellCount}");
+            labelDeadCellCount.Text = string.Format($"Dead Cells: {deadCellCount}");
         }
 
+        public void SteadyStateReached(bool state)
+        {
+            if(state)
+            {
+                nudCellSize.Enabled = true;
+                buttonReset.Enabled = true;
+                buttonStartStop.Text = string.Format("Simulation Finished");
+                buttonStartStop.Enabled = false;
+                buttonAdvancedGeneration.Enabled = false;
+            }
+        }
 
         public void InitializeView()
         {
@@ -175,6 +192,10 @@ namespace GameOfLife.View
         }
         private void buttonReset_Click(object sender, EventArgs e)
         {
+            pbGrid.Enabled = true;
+            buttonStartStop.Text = string.Format("Start Simulation");
+            buttonStartStop.Enabled = true;
+            buttonAdvancedGeneration.Enabled = true;
             setGame();
             AdjustPictureBoxSize();
             ResetSimulation?.Invoke(cellSize);
