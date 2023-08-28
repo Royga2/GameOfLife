@@ -32,6 +32,7 @@ namespace GameOfLife.View
         public int cellSize { get; private set; }
         #endregion 
 
+
         #region Constructor and Initialization
 
         public GameForm()
@@ -53,6 +54,7 @@ namespace GameOfLife.View
         }
 
         #endregion
+
 
         #region Event Handlers
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -117,6 +119,7 @@ namespace GameOfLife.View
         }
 
         #endregion
+
 
         #region Public Methods
 
@@ -210,6 +213,7 @@ namespace GameOfLife.View
 
         #endregion
 
+
         #region Private Methods
 
         private void DrawOnGraphics(Graphics g, int x, int y, bool isAlive)
@@ -248,8 +252,14 @@ namespace GameOfLife.View
             int widthModulus = viewWidth % cellSize;
             int heightModulus = viewHeight % cellSize;
 
-            pbGrid.Width = viewWidth - widthModulus;
-            pbGrid.Height = viewHeight - heightModulus;
+            int adjustedWidth = viewWidth - widthModulus;
+            int adjustedHeight = viewHeight - heightModulus;
+
+            pbGrid.Width = adjustedWidth;
+            pbGrid.Height = adjustedHeight;
+
+            pbGrid.Left = (this.ClientSize.Width - adjustedWidth) / 2;
+            pbGrid.Top = (this.ClientSize.Height - adjustedHeight) / 2;
         }
 
         private void pbGrid_MouseUp(object sender, MouseEventArgs e)
