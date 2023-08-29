@@ -7,7 +7,7 @@ namespace GameOfLife.Model
     {
         #region Properties
 
-        public Cell[,] cells { get; private set; }
+        public Cell[,] Cells { get; private set; }
         public int Rows { get; private set; }
         public int Cols { get; private set; }
         public int GenerationCount { get; private set; } = 0;
@@ -16,6 +16,7 @@ namespace GameOfLife.Model
 
         #endregion
 
+
         #region Events
 
         public event Action ColonyChanged;
@@ -23,22 +24,22 @@ namespace GameOfLife.Model
 
         #endregion
 
+
         #region Constructors
 
         public Colony(int rows, int cols)
         {
-            this.Rows = rows;
-            this.Cols = cols;
-            initialized(rows, cols);
+            Initialize(rows, cols);
         }
 
         #endregion
+
 
         #region Public Methods
 
         public void Reset(int numberOfRows, int numberOfColumns)
         {
-            initialized(numberOfRows, numberOfColumns);
+            Initialize(numberOfRows, numberOfColumns);
         }
 
         public void ComputeNextGeneration()
@@ -49,21 +50,25 @@ namespace GameOfLife.Model
             {
                 for (int currentCol = 0; currentCol < Cols; currentCol++)
                 {
-                    bool currentCellAliveStatus = cells[currentRow, currentCol].IsAlive;
-                    int numberOfLiveNeighbors = cells[currentRow, currentCol].LiveNeighborCount;
+                    bool currentCellAliveStatus = Cells[currentRow, currentCol].IsAlive;
+                    int numberOfLiveNeighbors = Cells[currentRow, currentCol].LiveNeighborCount;
 
-                    switch (currentCellAliveStatus)
+                    if (currentCellAliveStatus)
                     {
-                        case true when (numberOfLiveNeighbors < 2 || numberOfLiveNeighbors > 3):
+                        if (numberOfLiveNeighbors < 2 || numberOfLiveNeighbors > 3)
+                        {
                             cellUpdates[(currentRow, currentCol)] = false;
-                            break;
-                        case false when numberOfLiveNeighbors == 3:
+                        }
+                    }
+                    else
+                    {
+                        if (numberOfLiveNeighbors == 3)
+                        {
                             cellUpdates[(currentRow, currentCol)] = true;
-                            break;
+                        }
                     }
                 }
             }
-
             if (cellUpdates.Count > 0)
             {
                 GenerationCount++;
@@ -81,13 +86,13 @@ namespace GameOfLife.Model
 
         public bool GetCellState(int row, int col)
         {
-            return cells[row, col].IsAlive;
+            return Cells[row, col].IsAlive;
         }
 
         public void SetCellState(int row, int col, bool isAlive)
         {
-            bool oldState = cells[row, col].IsAlive;
-            cells[row, col].IsAlive = isAlive;
+            bool oldState = Cells[row, col].IsAlive;
+            Cells[row, col].IsAlive = isAlive;
 
             if (oldState != isAlive)
             {
@@ -105,13 +110,14 @@ namespace GameOfLife.Model
             {
                 for (int currentCol = 0; currentCol < Cols; currentCol++)
                 {
-                    result[currentRow, currentCol] = cells[currentRow, currentCol].IsAlive;
+                    result[currentRow, currentCol] = Cells[currentRow, currentCol].IsAlive;
                 }
             }
             return result;
         }
 
         #endregion
+
 
         #region Private Methods
 
@@ -128,7 +134,7 @@ namespace GameOfLife.Model
                 for (int colOffset = -1; colOffset <= 1; colOffset++)
                 {
                     if ((rowOffset != 0 || colOffset != 0) && IsValidCell(currentRow + rowOffset, currentCol + colOffset))
-                        cells[currentRow + rowOffset, currentCol + colOffset].LiveNeighborCount += adjustment;
+                        Cells[currentRow + rowOffset, currentCol + colOffset].LiveNeighborCount += adjustment;
                 }
             }
         }
@@ -143,20 +149,20 @@ namespace GameOfLife.Model
             ColonyChanged?.Invoke();
         }
 
-        private void initialized(int numberOfRows, int numberOfColumns)
+        private void Initialize(int numberOfRows, int numberOfColumns)
         {
             GenerationCount = 0;
             LiveCellCount = 0;
             DeadCellCount = numberOfRows * numberOfColumns;
             this.Rows = numberOfRows;
             this.Cols = numberOfColumns;
-            cells = new Cell[numberOfRows, numberOfColumns];
+            Cells = new Cell[numberOfRows, numberOfColumns];
 
             for (int currentRow = 0; currentRow < numberOfRows; currentRow++)
             {
                 for (int currentCol = 0; currentCol < numberOfColumns; currentCol++)
                 {
-                    cells[currentRow, currentCol] = new Cell();
+                    Cells[currentRow, currentCol] = new Cell();
                 }
             }
             OnColonyChanged();

@@ -33,7 +33,7 @@ namespace GameOfLife.controller
         private void initializedGame()
         {
             resetSimulation(5);
-            setTimer();
+            SetTimer();
             this.view.SimulationState += OnView_SimulationStateChanged;
             this.view.CellClicked += OnView_CellClicked;
             this.view.ResetSimulation += OnView_ResetSimulation;
@@ -125,10 +125,14 @@ namespace GameOfLife.controller
 
         #region Timer Control
 
-        private void setTimer()
+        private void SetTimer()
         {
-            gameTimer = new Timer();
-            gameTimer.Interval = timerInterval;
+            gameTimer = new Timer
+            {
+                Interval = timerInterval,
+                Enabled = false
+            };
+
             gameTimer.Tick += TimerTick;
         }
 
