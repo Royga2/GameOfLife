@@ -29,6 +29,7 @@ namespace GameOfLife.View
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GameForm));
             this.pbGrid = new System.Windows.Forms.PictureBox();
             this.nudCellSize = new System.Windows.Forms.NumericUpDown();
             this.labelCellSize = new System.Windows.Forms.Label();
@@ -245,6 +246,7 @@ namespace GameOfLife.View
             this.Cursor = System.Windows.Forms.Cursors.Arrow;
             this.DoubleBuffered = true;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(900, 600);
             this.Name = "GameForm";

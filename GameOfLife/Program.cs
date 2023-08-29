@@ -13,7 +13,7 @@ namespace GameOfLife
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Model.Colony colony = new Colony(20, 20);
+            Model.Colony colony = new Colony(20, 20 );
             View.GameForm gameForm = new GameForm();
             GameController controller = new GameController(colony, gameForm);
 

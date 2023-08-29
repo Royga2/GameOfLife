@@ -29,6 +29,7 @@ namespace GameOfLife.Model
         {
             this.Rows = rows;
             this.Cols = cols;
+            initialized(rows, cols);
         }
 
         #endregion
@@ -37,21 +38,7 @@ namespace GameOfLife.Model
 
         public void Reset(int numberOfRows, int numberOfColumns)
         {
-            GenerationCount = 0;
-            LiveCellCount = 0;
-            DeadCellCount = numberOfRows * numberOfColumns;
-            this.Rows = numberOfRows;
-            this.Cols = numberOfColumns;
-            cells = new Cell[numberOfRows, numberOfColumns];
-
-            for (int currentRow = 0; currentRow < numberOfRows; currentRow++)
-            {
-                for (int currentCol = 0; currentCol < numberOfColumns; currentCol++)
-                {
-                    cells[currentRow, currentCol] = new Cell();
-                }
-            }
-            OnColonyChanged();
+            initialized(numberOfRows, numberOfColumns);
         }
 
         public void ComputeNextGeneration()
@@ -80,7 +67,7 @@ namespace GameOfLife.Model
             if (cellUpdates.Count > 0)
             {
                 GenerationCount++;
-                foreach (KeyValuePair<(int row, int col), bool> update in cellUpdates)
+                foreach (var update in cellUpdates)
                 {
                     SetCellState(update.Key.row, update.Key.col, update.Value);
                 }
@@ -154,6 +141,25 @@ namespace GameOfLife.Model
         protected virtual void OnColonyChanged()
         {
             ColonyChanged?.Invoke();
+        }
+
+        private void initialized(int numberOfRows, int numberOfColumns)
+        {
+            GenerationCount = 0;
+            LiveCellCount = 0;
+            DeadCellCount = numberOfRows * numberOfColumns;
+            this.Rows = numberOfRows;
+            this.Cols = numberOfColumns;
+            cells = new Cell[numberOfRows, numberOfColumns];
+
+            for (int currentRow = 0; currentRow < numberOfRows; currentRow++)
+            {
+                for (int currentCol = 0; currentCol < numberOfColumns; currentCol++)
+                {
+                    cells[currentRow, currentCol] = new Cell();
+                }
+            }
+            OnColonyChanged();
         }
 
         protected virtual void OnSteadyStateReached()
